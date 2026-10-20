@@ -13,7 +13,7 @@
   :root{ --ki:#f4ece0; --sumi:#3d3226; --sub:#6E6053; --kon:#2b4a6b; --usu:#f6f1e8; --aka:#B23A48; }
   *{box-sizing:border-box}
   body{margin:0; padding:32px 16px 64px; background:var(--ki); font-family:"Zen Maru Gothic","Yu Gothic","Meiryo",sans-serif; color:var(--sumi); font-size:15px; line-height:1.8; word-break:auto-phrase}
-  .wrap{max-width:860px; margin:0 auto}
+  .wrap{max-width:1200px; margin:0 auto}
   .head{display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap; margin:0 0 16px}
   h1{font-size:24px; font-weight:900; margin:0}
   .from{font-size:13px; color:var(--sub); text-align:right}
@@ -38,7 +38,7 @@
   .sc{font:inherit; font-weight:900; color:var(--kon); background:none; border:0; padding:0 1px; margin:0; cursor:pointer; text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:3px}
   .sc:hover{background:#e6eef6; border-radius:4px}
   .sc:active{transform:translateY(1px)}
-  dialog{border:0; border-radius:18px; padding:20px 22px; width:min(760px,94vw); max-height:88vh; overflow:auto; color:var(--sumi); font-family:inherit}
+  dialog{border:0; border-radius:18px; padding:20px 22px; width:min(900px,94vw); max-height:88vh; overflow:auto; color:var(--sumi); font-family:inherit}
   dialog::backdrop{background:rgba(40,32,24,.45)}
   .dlg-head{display:flex; justify-content:space-between; align-items:flex-start; gap:12px}
   .dlg-head h3{font-size:20px; font-weight:900; margin:0; color:var(--kon)}
@@ -79,6 +79,14 @@
   h1 .sub{display:block; font-size:16px; font-weight:700; color:var(--sub); margin-top:6px}
   .ex{padding:6px 0}
   .ex + .ex{border-top:1px dashed #d8ccb8}
+  .view-toggle{display:flex; gap:8px; margin:0 0 12px; flex-wrap:wrap}
+  .vt{font:inherit; font-weight:900; font-size:14px; color:var(--kon); background:var(--usu); border:0; border-radius:10px; padding:7px 14px; cursor:pointer}
+  .vt.on{background:var(--kon); color:#fff}
+  .vt:active{transform:translateY(2px)}
+  .view{display:none} .view.on{display:block}
+  .grp{font-size:15px; font-weight:900; color:var(--kon); margin:14px 0 4px}
+  .tchip{display:inline-block; font-size:12px; font-weight:700; background:#fff; border-radius:6px; padding:1px 7px; margin:0 4px 3px 0; color:var(--sumi)}
+  @media print{ .view{display:block !important} .view-toggle{display:none} }
   .pnav{display:flex; gap:10px; flex-wrap:wrap; margin:0 0 16px} .pnav a{font-weight:900; color:var(--kon); background:#fff; border-radius:10px; padding:6px 12px; text-decoration:none} .pnav a.on{background:var(--kon); color:#fff}
   @media print{ .pnav{display:none} }
 </style>
@@ -95,7 +103,9 @@
 <!-- 4 -->
 <div class="panel">
 <h2>1．使い道の型と、小学校・中学校の例</h2>
+<div class="view-toggle" role="group" aria-label="表示の切り替え"><button type="button" class="vt on" data-v="by-type">型ごとに見る</button><button type="button" class="vt" data-v="by-school">学校ごとに見る</button></div>
 <p style="margin:0 0 8px">学校名を押すと、その学校の詳しい中身が出ます。<span class="tag">小</span>は小学校、<span class="tag">中</span>は中学校、<span class="tag">一貫</span>は小中一貫校・義務教育学校。</p>
+<div class="view on" id="by-type">
 <table class="types">
 <colgroup><col style="width:19%"><col style="width:41%"><col></colgroup>
 <thead><tr><th>型</th><th>小学校の例</th><th>中学校・小中一貫の例</th></tr></thead>
@@ -125,6 +135,8 @@
 <td><div class="ex"><span class="tag">中</span><button type="button" class="sc" data-id="rakunan">京都市立<wbr>洛南中</button>：隔週水曜6限、表現力育成をテーマに教科ごとの教材開発・研究授業</div><div class="ex"><span class="tag">中</span><button type="button" class="sc" data-id="shinjo">長崎県諫早市立<wbr>真城中</button>：ICTの事例研修で、45分でも50分と同等の効果を出す工夫を共有</div><div class="ex"><span class="tag">一貫</span><button type="button" class="sc" data-id="shuren">京都市立<wbr>向島秀蓮小中</button>：火曜は教科会、木曜は個別の支援が必要な子の情報交換・ケース会議と校内研修</div></td></tr>
 </tbody>
 </table>
+</div>
+<div class="view" id="by-school"></div>
 </div>
 
 <div class="panel">
@@ -192,5 +204,32 @@ document.querySelectorAll(".sc").forEach(b => b.addEventListener("click", () => 
 document.getElementById("dlg-close").addEventListener("click", closeDlg);
 dlg.addEventListener("click", e => { if (e.target === dlg) closeDlg(); });
 </script>
+<script>
+const VIEW = {"groups": [["京都市の研究校（令和8年度）", ["katsura", "katsurazaka", "arashiyama", "fujinoki", "rakuo", "shimogyo", "ritsuryo", "rakunan", "ryofu", "shuren"]], ["京都市・令和9年度の応募を準備中", ["fujishiro"]], ["全国の研究校（令和8年度・文科省資料の例）", ["tama", "kawahigashi", "yoshii", "hataka", "nakoso", "tono", "shinjo", "koryo"]], ["研究開発学校（サキドリより前からの先行例）", ["nakameguro", "komaba", "nakane", "gekkoen", "shimomeguro", "hatasho"]], ["現行制度の中で時間を工夫している例", ["nara", "ogawa", "omiya"]]], "types": {"katsura": ["①", "⑥"], "fujishiro": ["①", "④", "⑤"], "nakameguro": ["①"], "shuren": ["①", "④", "⑤", "⑥"], "ritsuryo": ["①", "④"], "tono": ["①"], "katsurazaka": ["②", "⑥"], "arashiyama": ["②", "③", "⑥"], "tama": ["②"], "komaba": ["②"], "hatasho": ["②"], "shimogyo": ["②"], "koryo": ["②"], "fujinoki": ["③"], "kawahigashi": ["③"], "nakane": ["③"], "rakunan": ["③", "④", "⑤", "⑥"], "gekkoen": ["④"], "shimomeguro": ["④"], "rakuo": ["⑤"], "nakoso": ["⑤"], "ryofu": ["⑤"], "yoshii": ["⑥"], "hataka": ["⑥"], "shinjo": ["⑥"], "nara": [], "ogawa": [], "omiya": []}, "typenames": {"①": "① 見通しと振り返り（自己調整）", "②": "② 探究・自分で選ぶ学び", "③": "③ 学習の土台づくり", "④": "④ 基礎の定着", "⑤": "⑤ 教科の上乗せ・新しい教科", "⑥": "⑥ 先生の研修・協議"}};
+(function(){
+  const kindTag = k => /小中|義務/.test(k) ? "一貫" : (/中学校|中等教育/.test(k) ? "中" : "小");
+  const firstSentence = s => { const plain = s.replace(/<[^>]+>/g, ""); const i = plain.indexOf("。"); return i > 0 ? plain.slice(0, i + 1) : plain; };
+  const how = s => { const r = s.rows.find(r => /時間の(生み方|組み方)/.test(r[0])); return r ? firstSentence(r[1]) : "—"; };
+  let html = "";
+  for (const [title, ids] of VIEW.groups) {
+    html += '<p class="grp">' + title + '</p><table class="schools"><colgroup><col style="width:22%"><col><col style="width:30%"></colgroup><thead><tr><th>学校</th><th>時間の生み方</th><th>当てはまる型</th></tr></thead><tbody>';
+    for (const id of ids) {
+      const s = SCHOOLS[id];
+      const name = s.short.replace(/(都立|府立|県立|市立|区立|町立|村立)/, "$1<wbr>");
+      const chips = (VIEW.types[id] || []).map(n => '<span class="tchip">' + VIEW.typenames[n] + '</span>').join("") || "—";
+      html += '<tr><td><span class="tag">' + kindTag(s.kind) + '</span><button type="button" class="sc" data-id="' + id + '">' + name + '</button></td><td>' + how(s) + '</td><td>' + chips + '</td></tr>';
+    }
+    html += "</tbody></table>";
+  }
+  const box = document.getElementById("by-school");
+  box.innerHTML = html;
+  box.querySelectorAll(".sc").forEach(b => b.addEventListener("click", () => openSchool(b.dataset.id)));
+  document.querySelectorAll(".vt").forEach(b => b.addEventListener("click", () => {
+    document.querySelectorAll(".vt").forEach(x => x.classList.toggle("on", x === b));
+    document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id === b.dataset.v));
+  }));
+})();
+</script>
+
 </body>
 </html>
